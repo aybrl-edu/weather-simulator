@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+/*Global Styles*/
+body {
+    width: 100vw;
+    height: 92vh;
+    font-family : 'Roboto', sans-serif;
+    font-size: 12px;
+    margin: 0;
+    padding: 0;
+}
+
+/*Simulator Page*/
+#simulator-body {
+    width: 99.8%;
+    height: 99.8%;
+    margin: 0.2%;
+    display: grid;
+    grid-template-rows: 15% 85%;
+}
+
+#sweather-conditions{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#sweather-controls {
+    display: grid;
+    grid-template-columns: 50% 50%;
+
+}
+
+#controls-left {
+    display: grid;
+    grid-template-rows: 15% 85%;
+}
+
+#sweather-controls h1 { 
+    color: #2196F3;
+}
+
+#controls-right {
+    display: grid;
+    grid-template-rows: 15% 85%;
+}
+
+#controls-left-top {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+#controls-right-top {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-left: 1px solid rgba(0, 0, 0, 0.155);
+}
+
+/*Components Styles*/
+#weather-box {
+    width: 1000px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#weather-box img {
+    width: 45px;
+    height: 45px;
+}
+
+.weather-box-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0.5%;
+}

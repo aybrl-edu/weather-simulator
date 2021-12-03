@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--Styles-->
+    <link rel="stylesheet" href="/css/simulator.css">
+    <link rel="stylesheet" href="/css/elements/toggleSwitch.css">
+    <link rel="stylesheet" href="/css/nav-header.css">
+    <!--JS Scripts-->
+    <script src="/js/simulator.js"></script>
+    <title>Simulator</title>
+</head>
+<body>
+    <%-include('../components/nav-header', {title : "SmartGrid Simulator"})-%>
+    <div id="simulator-body">
+        <div id="sweather-conditions">
+            <div><%-include('../components/weather-box')-%></div>
+        </div>
+        <div id="sweather-controls">
+            <div id="controls-left">
+                <div id="controls-left-top">
+                    <h1>Automatic Realtime Weather API</h1>
+                    <%-include('../elements/toggleSwitch', {id:"tg_weather", checked:"toggle_weather", onChange:"toggleSource()"})-%>
+                </div>
+                <div id="controls-left-down">
+                        
+                </div>
+            </div>
+            <div id="controls-right">
+                <div id="controls-right-top">
+                    <h1>Custom Predefined Scenarios</h1>
+                    <%-include('../elements/toggleSwitch', {id:"tg_custom", checked:"toggle_custom", onChange:"toggleSource()"})-%>
+                </div>
+                <div id="controls-right-down">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
