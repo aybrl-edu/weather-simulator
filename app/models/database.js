@@ -1,6 +1,7 @@
 import Pool from 'pg';
 
 import dotenv from 'dotenv';
+import e from 'express';
 
 dotenv.config()
 
@@ -30,9 +31,36 @@ export const getScenarioById = (id, callback) => {
     })
 }
 
+export const getAllScenarios = (callback) => {
+    poolSimulator.query(
+        'SELECT * FROM simulator_scenarios ORDER BY id_scenario DESC',
+        (error, results) => {
+        if (error) callback({code : "error"})
+        if(results) callback({code : "success", scenarios : results.rows})
+    })
+}
+
+export const getSelectedScenarioId = (callback) => {
+    poolSimulator.query(
+        'SELECT id_scenario FROM simulator_settings WHERE id_application=$1', [process.env.SIMULATOR_APP_ID],
+        (error, results) => {
+        if (error) callback({code : "error", message : error.message})
+        if(results) callback({code : "success", idScenario : results.rows[0]["id_scenario"]})
+    })
+}
+
 export const putDataSource = (source, callback) => {
     poolSimulator.query(
         'UPDATE simulator_settings SET data_source=$1 WHERE id_application=$2', [source, process.env.SIMULATOR_APP_ID],
+        (error, results) => {
+        if (error) callback({code : "error"})
+        if(results) callback({code : "success"})
+    })
+}
+
+export const putParamsScenarioId = (idScenario, callback) => {
+    poolSimulator.query(
+        'UPDATE simulator_settings SET id_scenario=$1 WHERE id_application=$2', [idScenario, process.env.SIMULATOR_APP_ID],
         (error, results) => {
         if (error) callback({code : "error"})
         if(results) callback({code : "success"})

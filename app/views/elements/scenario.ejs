@@ -1,0 +1,64 @@
+<div class="scenario-item">
+    <span class="scenarion-item-part">
+        <input type="radio" name="scenario-selector" id=<%=scenario.id_scenario%> <%=checked%> onchange="selectScenarioPointer(this.id)">
+    </span>
+
+    <span class="scenarion-item-part">
+        <label class="scenario-name"><%=scenario.scenario_name%></label>
+    </span>
+
+    <span class="scenarion-item-conditions">
+        <label class="scenario-id" hidden></label>
+        <!-- Temperature -->
+        <span>
+            <img src="/assets/icons/temp.png">
+            <label><%=scenario.temperature%>°C</label>
+        </span>
+        
+        <!-- Cloud Cover -->
+        <span>
+            <img src="/assets/icons/clouds.png">
+            <label><%=scenario.cloud_coverage%>%</label>
+        </span>
+
+        <!-- Rain -->
+        <span>
+            <img src="/assets/icons/rain.png">
+            <label><%=scenario.rain_volume%>%</label>
+        </span>
+
+        <!-- Wind -->
+        <span>
+            <img src="/assets/icons/wind.png">
+            <label><%=scenario.wind_speed%>km/h</label>
+        </span>
+        
+        <!-- Daylight -->
+        <span>
+            <% if(scenario.daylight.toUpperCase()==="DAY"){ %>
+                <img src="/assets/icons/sun.png">
+            <% } else { %>
+                <img src="/assets/icons/moon.png">   
+            <% } %>
+            <label><%=scenario.daylight%></label>
+        </span>
+
+        <!-- EFTI -->
+        <span>
+            <img src="/assets/icons/sunset.png">   
+            <label><%=scenario.efti%>%</label>
+        </span>
+    </span>
+
+    <!-- Controls -->
+    <span class="scenarion-item-part">
+        <span class="modify-scenario scenario-controls">
+            <img src="/assets/icons/modify.png"> 
+        </span>
+    </span>
+    <span class="scenarion-item-part">
+        <span class="delete-scenario scenario-controls">
+            <img src="/assets/icons/delete.png"> 
+        </span>
+    </span>
+</div>

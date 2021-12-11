@@ -1,0 +1,12 @@
+<div>
+    <div id="scenarios-box-header">
+        <h2 style="text-align: center;">Custom Scenario Pointer</h2>
+    </div>
+    <div id="scenarios-list">
+        <input type="button" value="open modal" onclick="openScenarioModal()">
+        <input type="button" value="close modal" onclick="closeScenarioModal()">
+        <%scenarios.forEach(function(scenario, key){ %>
+            <%-include('../elements/scenario', {scenario: scenario, checked : (selectedScenario === scenario.id_scenario) ? "checked" : ""})%>
+        <% }); %>
+    </div>
+</div>

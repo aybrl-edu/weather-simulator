@@ -3,6 +3,7 @@ import dotenv     from 'dotenv';
 import bodyParser from 'body-parser';
 import path       from 'path';
 
+import backofficeRouter from "./app/routes/backofficeRouter.js";
 import simulatorParamsRoutes from "./app/routes/simulatorParamsRoutes.js";
 import simulatorScenariosRoutes from "./app/routes/simulatorScenariosRoutes.js";
 
@@ -31,10 +32,8 @@ app.use(`/${api_version}/simulator`, simulatorParamsRoutes)
 //Backoffice Routes
 app.use(`/simulator/scenarios`, simulatorScenariosRoutes)
 
-//Pages rendering
-app.get('/simulator',function (req, res) {
-    res.render('pages/simulator')
-});
+//Pages Routes
+app.use('/simulator', backofficeRouter);
 
 //Listen
 app.listen(port, () => {console.log(`Simulator app listening at port : ${port}`)})

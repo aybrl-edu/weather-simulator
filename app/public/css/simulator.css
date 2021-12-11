@@ -3,10 +3,15 @@
 body {
     width: 100vw;
     height: 92vh;
+    height: 92vh;
     font-family : 'Roboto', sans-serif;
     font-size: 12px;
     margin: 0;
     padding: 0;
+    /* Dark Mode
+    background-color: rgb(43, 43, 43);
+    color: white !important;
+    */
 }
 
 /*Simulator Page*/
@@ -54,7 +59,90 @@ body {
     display: flex;
     justify-content: space-around;
     align-items: center;
+    border-left: 1px dotted rgba(0, 0, 0, 0.155);
+}
+
+#controls-left-bottom {
+    margin-left: 0.5%;
+    border-top: 1px solid rgba(0, 0, 0, 0.155);
+}
+
+#controls-right-bottom {
+    margin-right: 0.5%;
+    border-top: 1px solid rgba(0, 0, 0, 0.155);
     border-left: 1px solid rgba(0, 0, 0, 0.155);
+}
+
+#controls-right-bottom img {
+    width: 30px;
+    height: 30px;
+}
+
+#scenarios-list {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+/*Scenario box scroll bar */
+
+#scenarios-list::-webkit-scrollbar {
+    color: black;
+    width: 4px;
+}
+
+#scenarios-list::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.11);
+    border-radius: 10px;
+}
+
+#scenarios-list::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.541);
+    border-radius: 10px;
+}
+
+.scenario-item {
+    display: grid;
+    grid-template-columns: 5% 12% 72% 3% 3%;
+    column-gap: 1%;
+    margin: 1%;
+    height: 60px;
+    border-bottom: 1px solid rgb(0, 0, 0, 0.09);
+}
+
+.scenarion-item-conditions span {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.scenarion-item-part {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.scenarion-item-conditions {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-left: 1px rgba(0, 0, 0, 0.041) solid;
+    border-right: 1px rgba(0, 0, 0, 0.041) solid;
+}
+
+#scenarios-box-header {
+    height: 65px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.scenario-controls img {
+    width: 20px !important;
+    height: 20px !important;
+    cursor: pointer;
 }
 
 /*Components Styles*/
@@ -76,4 +164,71 @@ body {
     justify-content: center;
     align-items: center;
     margin: 0.5%;
+}
+
+/* Scenario modal */
+#scenario-modal {
+    display: none;
+    justify-content: center;
+    align-items: center; 
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    background-color: rgba(0, 0, 0, 0.432);
+}
+
+#scenario-modal-content {
+    width: 400px;
+    height: 250px;
+    background-color: white;
+    box-shadow: 0px 15px 30px -20px rgba(0, 0, 0, 0.945);
+    border-radius: 10px;
+    display: grid;
+    grid-template-rows: 17% 66% 17%;
+}
+
+#scenario-modal-inputs {
+    display: grid;
+    grid-template-columns: 49% 49%;
+}
+
+#scenario-modal-inputs img {
+    width: 25px;
+    height: 25px;
+}
+
+#scenario-modal-inputs div {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: flex-start;
+}
+
+#scenario-modal-inputs div:nth-child(1) {
+    margin-left: 40px;
+}
+
+#scenario-modal-inputs span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-inputs {
+    outline: none;
+    border: none;
+    background-color: rgb(221, 221, 221);
+    margin-left: 8px;
+    margin-right: 8px;
+    height: 10px;
+    padding: 5px;
+    width: 80px;
+}
+
+#scenario-daylight {
+    height: 23px !important;
+    width: 90px !important;
 }

@@ -24,8 +24,8 @@
                     <h1>Automatic Realtime Weather API</h1>
                     <%-include('../elements/toggleSwitch', {id:"tg_weather", checked:"toggle_weather", onChange:"toggleSource()"})-%>
                 </div>
-                <div id="controls-left-down">
-                        
+                <div id="controls-left-bottom">
+                    <%-include('../components/previsions-box')-%>
                 </div>
             </div>
             <div id="controls-right">
@@ -33,11 +33,12 @@
                     <h1>Custom Predefined Scenarios</h1>
                     <%-include('../elements/toggleSwitch', {id:"tg_custom", checked:"toggle_custom", onChange:"toggleSource()"})-%>
                 </div>
-                <div id="controls-right-down">
-
+                <div id="controls-right-bottom">
+                    <%-include('../components/scenarios-box')-%>
                 </div>
             </div>
         </div>
     </div>
+    <%-include('../components/scenario-modal')-%>
 </body>
 </html>
