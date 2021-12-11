@@ -1,8 +1,8 @@
 import express from 'express';
 const router = express.Router();
 
-import {getSimulatorParams} from '../controllers/simulatorParamsController.js';
+import {getScenarios} from '../controllers/scenariosController.js';
 
-router.get('/', getSimulatorParams)
+router.get('/', getScenarios)
 
 export default router

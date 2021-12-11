@@ -3,23 +3,23 @@ var toggle_weather = true;
 var toggle_custom = !toggle_weather;
 
 //Elements
-var tgWeatherElement    = null;
-var tgCustomElement     = null;
-var tempElement         = null;
-var cloudElement        = null;
-var rainElement         = null;
-var windElement         = null;
-var sunriseElement      = null;
-var sunsetElement       = null;
+var tgWeatherElement      = null;
+var tgCustomElement       = null;
+var tempElement           = null;
+var cloudElement          = null;
+var rainElement           = null;
+var windElement           = null;
+var sunriseElement        = null;
+var sunsetElement         = null;
+var scenarioModalElement  = null;
 
 //Globals
 var params = {
     temperature     : 0,
     windSpeed       : 0,
     cloudsCover     : 0,
-    sunrise         : 0,
-    sunset          : 0,
-    precipitation   : 0 
+    precipitation   : 0,
+    daylight        : 'DAY'
 }
 
 var DATA_SOURCE = null
@@ -40,8 +40,9 @@ function __init_conditions() {
 
 //Loaders
 function loadSimulator() {
-    tgWeatherElement    = document.getElementById("tg_weather");
-    tgCustomElement     = document.getElementById("tg_custom");
+    tgWeatherElement         = document.getElementById("tg_weather");
+    tgCustomElement          = document.getElementById("tg_custom");
+    scenarioModalElement     = document.getElementById('scenario-modal')
     tgWeatherElement.checked = toggle_weather;
     tgCustomElement.checked  = toggle_custom;
 }
@@ -51,8 +52,8 @@ function loadWeatherBox() {
     cloudElement    = document.getElementById("cloud-value");
     rainElement     = document.getElementById("rain-value");
     windElement     = document.getElementById("wind-value");
-    sunriseElement  = document.getElementById("sunrise-value");
-    sunsetElement   = document.getElementById("sunset-value");
+    daylightImage   = document.getElementById("daylight-img");
+    daylightElement = document.getElementById("daylight-value");
     reloadConditionsValues()
 }
 
@@ -78,7 +79,7 @@ function getParamSource() {
     .catch(e => console.log(e))
 }
 function getWeatherParams() {
-    fetch('v1/simulator/params')
+    fetch('/v1/simulator/params')
     .then(res => res.json())
     .then(response => {
         if(response.code === "success") {
@@ -89,7 +90,7 @@ function getWeatherParams() {
     .catch(e => console.log(e))
 }
 
-function getScenarioParams(id) {
+function getScenarioParams(id, callback) {
     
 }
 
@@ -107,6 +108,20 @@ function putParamsSource(paramsource, callback) {
     .catch(e => console.log(e))
 }
 
+function putScenarioPointer(id_scenario, callback) {
+    const request = {
+        method  : 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Accept' : 'application/json'},
+        body    : JSON.stringify({idScenario : id_scenario})
+    }
+    fetch('/v1/simulator/params/pointer', request)
+    .then(res => res.json())
+    .then(response => {
+        if(response.code === "success") callback()
+    })
+    .catch(e => console.log(e))
+}
+
 
 //Element Manipulation
 function reloadToggle() {
@@ -115,12 +130,12 @@ function reloadToggle() {
 }
 
 function reloadConditionsValues() {
-    tempElement.innerText     = params.temperature+'°C';
-    cloudElement.innerText    = params.cloudsCover+'%';
-    rainElement.innerText     = params.precipitation+'%';
-    windElement.innerText     = params.windSpeed+'km/h';
-    sunriseElement.innerText  = new Date(params.sunrise * 1000).toString().split(' ').slice(4,6).join(' ');
-    sunsetElement.innerText   = new Date(params.sunset * 1000).toString().split(' ').slice(4,6).join(' ');
+    tempElement.innerText       = params.temperature+'°C';
+    cloudElement.innerText      = params.cloudsCover+'%';
+    rainElement.innerText       = params.precipitation+'%';
+    windElement.innerText       = params.windSpeed+'km/h';
+    daylightImage.src           = (params.daylight === 'DAY') ? '/assets/icons/sun.png' : '/assets/icons/moon.png';
+    daylightElement.innerText   = params.daylight;
 }
 
 function toggleSource() {
@@ -133,4 +148,22 @@ function toggleSource() {
     reloadToggle()
 }
 
-//Variables Setters
+function selectScenarioPointer(id) {
+    putScenarioPointer(id, () => {
+        if(toggle_custom) getWeatherParams()
+    })
+}
+
+function openScenarioModal() {
+    scenarioModalElement.style.display = 'flex'
+}
+
+function closeScenarioModal() {
+    scenarioModalElement.style.display = 'none'
+}
+
+window.onclick = function(event) {
+    if (event.target == scenarioModalElement) {
+        scenarioModalElement.style.display = "none";
+    }
+}

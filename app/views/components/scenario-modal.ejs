@@ -1,0 +1,54 @@
+<div id="scenario-modal">
+    <div id="scenario-modal-content">
+        <div id="scenario-modal-title">
+            <h2 style="text-align: center;">Add/Update Scenario</h2>
+        </div>
+        <div id="scenario-modal-inputs">
+            <div>
+                <span>
+                    <img src="/assets/icons/temp.png"></img>
+                    <input type="number" id="scenario-temperature" class="modal-inputs">
+                    <label>°C</label>
+                </span>
+                
+                <span>
+                    <img src="/assets/icons/rain.png"></img>
+                    <input type="number" id="scenario-rain" class="modal-inputs">
+                    <label>%</label>
+                </span>
+
+                <span>
+                    <img src="/assets/icons/sunrise.png"></img>
+                    <input type="number" id="scenario-efti" class="modal-inputs">
+                    <label>%</label>
+                </span>
+            </div>
+    
+            <div>
+                <span>
+                    <img src="/assets/icons/wind.png"></img>
+                    <input type="number" id="scenario-wind" class="modal-inputs">
+                    <label>km/h</label>
+                </span>
+                
+                <span>
+                    <img src="/assets/icons/clouds.png"></img>
+                    <input type="number" id="scenario-clouds" class="modal-inputs">
+                    <label>%</label>
+                </span>
+                
+                <span>
+                    <img id="daylight-img" src="/assets/icons/sun.png"></img>
+                    <select id="scenario-daylight" class="modal-inputs">
+                        <option id="DAY" name="DAY">DAY</option>
+                        <option id="NIGHT" name="NIGHT">NIGHT</option>
+                    </select>
+                </span>
+                
+            </div>
+        </div>
+        <div id="scenario-modal-buttons">
+            <input type="button" id="submit-scenario" value="Send">
+        </div>
+    </div>
+</div>
