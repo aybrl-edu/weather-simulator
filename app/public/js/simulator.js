@@ -154,12 +154,68 @@ function selectScenarioPointer(id) {
     })
 }
 
+function addScenario() {
+    const name          = document.getElementById("scenario-name").value;
+    const wind          = document.getElementById("scenario-wind").value;
+    const rain          = document.getElementById("scenario-rain").value;
+    const efti          = document.getElementById("scenario-efti").value;
+    const clouds        = document.getElementById("scenario-clouds").value;
+    const daylight      = document.getElementById("scenario-daylight").value;
+    const temperature   = document.getElementById("scenario-temperature").value;
+
+    const request = {
+        method  : 'POST',
+        headers : { 'Content-Type': 'application/json', 'Accept' : 'application/json'},
+        body    : JSON.stringify({
+            name        : name,
+            wind        : wind,
+            rain        : rain,
+            efti        : efti,
+            clouds      : clouds,
+            daylight    : daylight,
+            temperature : temperature
+        })
+    }
+    fetch('/v1/simulator/scenario', request)
+    .then(res => res.json())
+    .then(response => {
+        if(response.code === "success") reloadScenarioBox()
+    })
+    .catch(e => console.log(e))
+}
+
+function deleteScenario(idScenario) {
+
+    let isHeSure = confirm("Are you sur ?");
+
+    if(isHeSure) {
+        const request = {
+            method  : 'DELETE',
+            headers : { 'Content-Type': 'application/json', 'Accept' : 'application/json'},
+            body    : JSON.stringify({
+                idScenario : idScenario
+            })
+        }
+        fetch('/v1/simulator/scenario', request)
+        .then(res => res.json())
+        .then(response => {
+            if(response.code === "success") reloadScenarioBox()
+        })
+        .catch(e => console.log(e))
+    }
+    
+}
+
 function openScenarioModal() {
     scenarioModalElement.style.display = 'flex'
 }
 
 function closeScenarioModal() {
     scenarioModalElement.style.display = 'none'
+}
+
+function reloadScenarioBox() {
+    location.reload()
 }
 
 window.onclick = function(event) {

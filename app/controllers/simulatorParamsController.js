@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import {getDataSource, putDataSource, getScenarioById, putParamsScenarioId}  from '../models/database.js';
+import {getDataSource, putDataSource, getScenarioById, putParamsScenarioId, insertScenario, dropScenario}  from '../models/database.js';
 
 // Globals
 
@@ -50,17 +50,40 @@ export const putScenarioPointer = (req, res) => {
     putParamsScenarioId(idScenario, response => res.send(response))
 }
 
+export const postScenario =  (req, res) => {
+    const scenario = {
+        name          : req.body.name,
+        wind          : req.body.wind,
+        rain          : req.body.rain,
+        efti          : req.body.efti,
+        clouds        : req.body.clouds,
+        daylight      : req.body.daylight,
+        temperature   : req.body.temperature
+    }
+
+    insertScenario(scenario, response => {
+        res.send(response)
+    })
+}
+
+export const deleteScenario =  (req, res) => {
+    const id = req.body.idScenario
+    dropScenario(id, response => {
+        res.send(response)
+    })
+}
+
 // Workers
 const getWeatherFromAPI = (callback) => {
     fetch(`https://api.openweathermap.org/data/${process.env.WEATHER_API_VERSION}/weather?q=${process.env.WEATHER_API_CITY}&appid=${process.env.WEATHER_API_KEY}&units=metric`)
     .then(res => res.json())
     .then(data => callback({code : "success", conditionParams : weatherDataToParamsObj(data)}))
-    .catch((e) => callback({code : "error", message : "an error has occured while trying to retrieve weather data", "message" : e.message}))
+    .catch((e) => callback({code : "error", message : e.message}))
 }
 
 // Helpers
 const weatherDataToParamsObj = (data) => {  
-    let now = Date.now();
+    let now = Date.now()
     const paramsObj = {...import('../models/conditionsObject.js')}
     paramsObj.condition     = data.weather.main
     paramsObj.temperature   = data.main.temp

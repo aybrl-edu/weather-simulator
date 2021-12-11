@@ -5,4 +5,5 @@ import {getScenarios} from '../controllers/scenariosController.js';
 
 router.get('/', getScenarios)
 
+
 export default router

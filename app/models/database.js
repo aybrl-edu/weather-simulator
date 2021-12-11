@@ -49,6 +49,27 @@ export const getSelectedScenarioId = (callback) => {
     })
 }
 
+export const insertScenario = (scenario, callback) => {
+    poolSimulator.query(
+        `INSERT INTO simulator_scenarios(scenario_name, scenario_description, temperature, wind_speed, rain_volume, cloud_coverage, daylight, efti) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`, 
+        [scenario.name, scenario.description, scenario.temperature, scenario.wind, scenario.rain, scenario.clouds, scenario.daylight, scenario.efti],
+        (error, results) => {
+            if (error) callback({code : "error", message : error.message})
+            if(results) callback({code : "success"})
+        }
+    )
+}
+
+export const dropScenario = (id, callback) => {
+    poolSimulator.query(
+        'DELETE FROM simulator_scenarios WHERE id_scenario=$1', [id],
+        (error, results) => {
+        if (error) callback({code : "error"})
+        if(results) callback({code : "success"})
+    })
+}
+
 export const putDataSource = (source, callback) => {
     poolSimulator.query(
         'UPDATE simulator_settings SET data_source=$1 WHERE id_application=$2', [source, process.env.SIMULATOR_APP_ID],
