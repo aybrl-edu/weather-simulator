@@ -13,6 +13,9 @@ export const getSimulatorPage =  (req, res) => {
                 else console.error("error while rendring the simulator page")
             })
         }
-        else throw response.message
+        else {
+            console.error(response)
+            console.error(response.message)
+        }
     })
 }
