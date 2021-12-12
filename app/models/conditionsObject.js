@@ -1,4 +1,5 @@
 export const conditionObject = {
+    efti            : 0,            //Number
     condition       : '',          //String
     temperature     : 0,          //Number
     windSpeed       : 0,         //Speed

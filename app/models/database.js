@@ -26,8 +26,8 @@ export const getScenarioById = (id, callback) => {
     poolSimulator.query(
         'SELECT * FROM simulator_scenarios WHERE id_scenario=$1', [id],
         (error, results) => {
-        if (error) callback({code : "error"})
-        else if(results) callback(results.rows[0] || {})
+            if (error) callback({code : "error"})
+            else if(results) callback(results.rows[0] || {})
     })
 }
 

@@ -101,5 +101,6 @@ const scenarioDataToParamsObj = (data) => {
     paramsObj.cloudsCover   = data.cloud_coverage
     paramsObj.daylight      = data.daylight
     paramsObj.precipitation = data.rain_volume
+    paramsObj.efti          = data.efti
     return paramsObj
 }
