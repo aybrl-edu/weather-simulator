@@ -35,7 +35,7 @@ export const getAllScenarios = (callback) => {
     poolSimulator.query(
         'SELECT * FROM simulator_scenarios ORDER BY id_scenario DESC',
         (error, results) => {
-        if (error) callback({code : "error"})
+        if (error) callback({code : "error" , message : error.message})
         if(results) callback({code : "success", scenarios : results.rows})
     })
 }
