@@ -1,14 +1,35 @@
-import fetch from 'node-fetch';
-import {getDataSource, putDataSource, getScenarioById, putParamsScenarioId, insertScenario, dropScenario}  from '../models/database.js';
+const fetch = require('node-fetch');
+const {getDataSource, 
+    putDataSource, 
+    getScenarioById, 
+    putParamsScenarioId, 
+    insertScenario,
+    insertScenarioInterval,
+    insertScenarioValues,
+    getScenarioIntervals, 
+    dropScenario, 
+    getAllScenarios,
+    dropValues,
+    getIntervalValues,
+    dropInterval,
+    getSelectedScenarioId
+    } = require('../models/database.js');
+
+var {setSimulatorPause, 
+    setSimulatorFrequency,
+    setScenarioData
+} = require('../workers/threadVirtualMemory.js');
+
+var {updateFrequency,updatePause, sendSimulatorTime} = require('../workers/conditionGenerator.js');
 
 // Globals
 
 // Simulator 
-export const getSimulatorParams =  (req, res) => {
+exports.getSimulatorParams =  (req, res) => {
     // Check the DATA source {Weather API, Cutom Scenarios}
     getDataSource(response => {
         // Interogate the data source
-        switch(response.dataSource) {
+            switch (response.dataSource) {
             case 'WEATHER' : 
                 getWeatherFromAPI((response) => {
                     res.send(response)
@@ -26,51 +47,73 @@ export const getSimulatorParams =  (req, res) => {
     });
 }
 
-export const getSimulatorScenario = (req, res) => {
+exports.getSimulatorScenario = async (req, res) => {
     const idScenario = req.params.idScenario
-    getScenarioById(idScenario, (response) => {
-        res.send(response)
-    })
+    const response = await getScenarioFromDB(idScenario)
+    res.send(response)
 }
 
+exports.getSimulatorScenarios = async (req, res) => {
+    const response = await getAllScenariosFromDB()
+    res.send(response)
+}
+
+
 // Param Source
-export const getParamSource = (req, res) => {
+exports.getParamSource = (req, res) => {
     getDataSource(response => {
         res.send(response)
     });
 }
 
-export const putParamSource = (req, res) => {
+exports.putParamSource = (req, res) => {
     const source = req.body.source
     putDataSource(source, response => res.send(response))
 }
 
-export const putScenarioPointer = (req, res) => {
+exports.putScenarioPointer = (req, res) => {
     const idScenario = req.body.idScenario
     putParamsScenarioId(idScenario, response => res.send(response))
 }
 
-export const postScenario =  (req, res) => {
-    const scenario = {
-        name          : req.body.name,
-        wind          : req.body.wind,
-        rain          : req.body.rain,
-        efti          : req.body.efti,
-        clouds        : req.body.clouds,
-        daylight      : req.body.daylight,
-        temperature   : req.body.temperature
-    }
+exports.postScenario =  (req, res) => {
+    let state = 0;
+    let idScenario = null;
 
-    insertScenario(scenario, response => {
-        res.send(response)
+    insertScenario(req.body.scenario_name, response => {
+        if(response.code === "success") {
+            idScenario = response.results.rows[0].id_scenario
+            let scenarioIntervals = req.body.scenario_intervals
+            let isIntevalsLast = false
+            for(let i = 0 ; i < scenarioIntervals.length ; i++) {
+                if(i === scenarioIntervals.length - 1) isIntevalsLast = true
+                // insert interval 
+                insertScenarioInterval(scenarioIntervals[i], idScenario, response => {
+                    if(response.code === "success") {
+                        let idInterval = response.results.rows[0].id_scenario_intervals
+                        let intervalValues = scenarioIntervals[i].interval_values;
+                        for(let j = 0 ; j < intervalValues.length ; j++) {
+                            // insert interval values
+                            insertScenarioValues(intervalValues[j], idInterval, () => {
+                                if(response.code !== "success") return;
+                            })
+                        }
+                    } else return;
+                })
+            } 
+            res.send({"code" : "success", "message" : "scenario inserted succefully. ID : "+idScenario})
+        } else return;
     })
 }
-
-export const deleteScenario =  (req, res) => {
+exports.deleteScenario =  async (req, res) => {
     const id = req.body.idScenario
-    dropScenario(id, response => {
-        res.send(response)
-    })
+    let intervals = await getScenarioIntervals(id)
+    if(intervals.code === "error") res.send(intervals)
+    for(let i=0 ; i<intervals.length ; i++) {
+        await dropValues(intervals[i].id_scenario_intervals)
+    }
+    await dropInterval(id)
+    dropScenario(id, resp => res.send(resp))
 }
 
 // Workers
@@ -103,4 +146,192 @@ const scenarioDataToParamsObj = (data) => {
     paramsObj.precipitation = data.rain_volume
     paramsObj.efti          = data.efti
     return paramsObj
+}
+
+async function getAllScenariosFromDB () {
+    
+    let response = []
+    const scenariosRes = await getAllScenarios()
+    
+    let scenarios = scenariosRes.scenarios
+
+    for(let i = 0; i < scenarios.length; i++) {
+        let scenarioObj = await getScenarioFromDB(scenarios[i].id_scenario)
+        response.push(scenarioObj)
+    }
+
+    return response;
+}
+
+exports.getAllScenariosWithMinMaxFromDB = async () => {
+    
+    let response = []
+    const scenariosRes = await getAllScenarios()
+    
+    let scenarios = scenariosRes.scenarios
+
+    for(let i = 0; i < scenarios.length; i++) {
+        let scenarioObj = await getScenarioWithMinMaxFromDB(scenarios[i].id_scenario)
+        response.push(scenarioObj)
+    }
+
+    return response;
+}
+
+async function getScenarioFromDB (idScenario) {
+    
+    let scenarioRes = await getScenarioById(idScenario)
+
+    if(scenarioRes.code === "error" || !scenarioRes.id_scenario) return scenarioRes
+
+    let scenarioObj = {
+        "id_scenario" : idScenario,
+        "scenario_name" : scenarioRes.scenario_name,
+        "scenario_intervals" : []
+    }
+    
+    let intervals = await getScenarioIntervals(idScenario)
+    
+    if(intervals.code === "error") return intervals
+
+    for(let j = 0; j < intervals.length; j++) {
+        let intervalObj = {
+            "id_interval" : intervals[j].id_scenario_intervals,
+            "param_type" : intervals[j].param_type,
+            "interval_values" : [] 
+        }
+        let valuesRes = await getIntervalValues(intervals[j].id_scenario_intervals)
+        if(valuesRes.code !== "error") {
+            intervalObj.interval_values.push(valuesRes)
+        }
+        scenarioObj.scenario_intervals.push(intervalObj)
+    }
+    
+    return scenarioObj;
+}
+
+
+const getScenarioWithMinMaxFromDB = async (idScenario) => {
+    
+    let scenarioRes = await getScenarioById(idScenario)
+
+    if(scenarioRes.code === "error" || !scenarioRes.id_scenario) return scenarioRes
+
+    let scenarioObj = {
+        "scenario_id" : idScenario,
+        "scenario_name" : scenarioRes.scenario_name,
+        "interval_values" : []
+    }
+    
+    let intervals = await getScenarioIntervals(idScenario)    
+    
+    if(intervals.code === "error") return intervals
+
+    for(let j = 0; j < intervals.length; j++) {
+        let valuesRes = await getIntervalValues(intervals[j].id_scenario_intervals)
+        
+        if(valuesRes.code !== "error") {
+            let intervalValuesObj = {
+                "type_param" : intervals[j].param_type,
+                "min" : null,
+                "max" : null
+            }
+    
+            let min = Number.POSITIVE_INFINITY
+            let max = Number.NEGATIVE_INFINITY
+    
+            for(let i = 0; i < valuesRes.length; i++) {
+                if(valuesRes[i].interval_inf_bound < min) min = valuesRes[i].interval_inf_bound
+                if(valuesRes[i].interval_sup_bound > max) max = valuesRes[i].interval_sup_bound
+            }
+            intervalValuesObj.min = min
+            intervalValuesObj.max = max
+
+            scenarioObj.interval_values.push(intervalValuesObj)
+        }
+    }
+    
+    return scenarioObj;
+}
+
+exports.setSimulatorFrequency = (req, res) => {
+    setSimulatorFrequency(req.body.frequency * 1000)
+    updateFrequency(req.body.frequency * 1000)
+    res.send({"code" : "success"})
+}
+
+exports.setPauseSimulator = (req, res) => {
+    setSimulatorPause(req.body.pause)
+    updatePause(req.body.pause)
+    res.send({"code" : "success"})
+}
+
+exports.getSimulatorTimeL = (req, res) => {
+    res.send({"code" : "success", "time" : sendSimulatorTime()})
+}
+
+exports.getSimulationParams = async (req, res) => {
+    // init
+    const generatedParams = {
+        "temperature" : 0,
+        "wind" : 0,
+        "precipitations" : 0,
+        "clouds" : 0
+    }
+    const actualConditions = {
+        time : null, // SimulTime
+        params : null //GenParams
+    }
+
+    // scenario
+    const selectedScenario = await getSelectedScenarioId()
+    let scenario = await getScenarioFromDB(selectedScenario.idScenario)
+    let currentInterval = getIntervalFromTime(sendSimulatorTime())
+    
+    // interval
+    let tempInterval = getValueFromInterval(scenario.scenario_intervals[0].interval_values, currentInterval)
+    let cloudsInterval = getValueFromInterval(scenario.scenario_intervals[1].interval_values, currentInterval)
+    let windInterval = getValueFromInterval(scenario.scenario_intervals[2].interval_values, currentInterval)
+    let prepInterval = getValueFromInterval(scenario.scenario_intervals[3].interval_values, currentInterval)
+
+    // values
+    generatedParams.temperature = generateRandom(tempInterval.inf, tempInterval.sup)
+    generatedParams.clouds = generateRandom(cloudsInterval.inf, cloudsInterval.sup)
+    generatedParams.wind = generateRandom(windInterval.inf, windInterval.sup)
+    generatedParams.precipitations = generateRandom(prepInterval.inf, prepInterval.sup)
+
+    // response
+    actualConditions.time = sendSimulatorTime()
+    actualConditions.params = generatedParams
+
+    res.send(actualConditions);
+}
+
+// Helplers
+
+function getIntervalFromTime(simulatorTime) {
+    if(simulatorTime.hours >= 0 && simulatorTime.hours < 6) return "00h-06h"
+    if(simulatorTime.hours >= 6 && simulatorTime.hours < 12) return "06h-12h"
+    if(simulatorTime.hours >= 12 && simulatorTime.hours < 18) return "12h-18h"
+    if(simulatorTime.hours >= 18 && simulatorTime.hours < 0) return "18h-00h"
+}
+
+function getValueFromInterval(values, interval) {
+    let intervalRes = {
+        'inf' : 0,
+        'sup' : 0
+    }
+    values.filter(valueArr => {
+        valueArr.filter(value => {
+           if(value.interval_from_to === interval){
+                intervalRes.inf = value.interval_inf_bound
+                intervalRes.sup = value.interval_sup_bound
+           }
+        })
+    })
+    return intervalRes
+}
+
+function generateRandom(min , max) {
+    return (Math.random() * (max - min) + min).toFixed(2);
 }

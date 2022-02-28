@@ -1,10 +1,10 @@
 <div class="scenario-item">
     <span class="scenarion-item-part">
-        <input type="radio" name="scenario-selector" id=<%=scenario.id_scenario%> <%=checked%> onchange="selectScenarioPointer(this.id)">
+        <input type="radio" name="scenario-selector" id=<%=scenario.scenario_id%> <%=checked%> onchange="selectScenarioPointerV2(this.id)">
     </span>
 
     <span class="scenarion-item-part">
-        <label class="scenario-name"><%=scenario.scenario_name%></label>
+        <label class="scenario-name" for=<%=scenario.scenario_id%>><%=scenario.scenario_name%></label>
     </span>
 
     <span class="scenarion-item-conditions">
@@ -12,48 +12,32 @@
         <!-- Temperature -->
         <span>
             <img src="/assets/icons/temp.png">
-            <label><%=scenario.temperature%>°C</label>
+            <label>min : <%=scenario.interval_values[0].min%>°C | max : <%=scenario.interval_values[2].max%>°C</label>
         </span>
         
         <!-- Cloud Cover -->
         <span>
             <img src="/assets/icons/clouds.png">
-            <label><%=scenario.cloud_coverage%>%</label>
+            <label>min : <%=scenario.interval_values[2].min%>% | max : <%=scenario.interval_values[2].max%>%</label>
         </span>
 
         <!-- Rain -->
         <span>
             <img src="/assets/icons/rain.png">
-            <label><%=scenario.rain_volume%>%</label>
+            <label>min : <%=scenario.interval_values[3].min%>% | max : <%=scenario.interval_values[2].max%>%</label>
         </span>
 
         <!-- Wind -->
         <span>
             <img src="/assets/icons/wind.png">
-            <label><%=scenario.wind_speed%>km/h</label>
-        </span>
-        
-        <!-- Daylight -->
-        <span>
-            <% if(scenario.daylight.toUpperCase()==="DAY"){ %>
-                <img src="/assets/icons/sun.png">
-            <% } else { %>
-                <img src="/assets/icons/moon.png">   
-            <% } %>
-            <label><%=scenario.daylight%></label>
-        </span>
-
-        <!-- EFTI -->
-        <span>
-            <img src="/assets/icons/sunset.png">   
-            <label><%=scenario.efti%>%</label>
+            <label>min : <%=scenario.interval_values[1].min%>km/h | max : <%=scenario.interval_values[2].max%>km/h</label>
         </span>
     </span>
 
     <!-- Controls -->
     <span class="scenarion-item-part">
         <span class="delete-scenario scenario-controls">
-            <img src="/assets/icons/delete.png" id=<%=scenario.id_scenario%> onclick="deleteScenario(id)"> 
+            <img src="/assets/icons/delete.png" id=<%=scenario.scenario_id%> onclick="deleteScenario(id)"> 
         </span>
     </span>
 </div>

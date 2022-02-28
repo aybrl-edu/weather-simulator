@@ -1,189 +1,34 @@
-//Params
-var toggle_weather = true;
-var toggle_custom = !toggle_weather;
 
-//Elements
-var tgWeatherElement      = null;
-var tgCustomElement       = null;
-var tempElement           = null;
-var cloudElement          = null;
-var rainElement           = null;
-var windElement           = null;
-var sunriseElement        = null;
-var sunsetElement         = null;
-var scenarioModalElement  = null;
-
-//Globals
-var params = {
-    temperature     : 0,
-    windSpeed       : 0,
-    cloudsCover     : 0,
-    precipitation   : 0,
-    daylight        : 'DAY'
-}
-
-var DATA_SOURCE = null
 
 //On load
 window.onload = function() {
-    loadNavBar()
-    loadSimulator()
-    loadWeatherBox()
-    getParamSource()
-    getWeatherParams()
+    setInterval(loadData, 990)
 };
 
-//Initializers
-function __init_conditions() {
 
-}
 
-//Loaders
-function loadSimulator() {
-    tgWeatherElement         = document.getElementById("tg_weather");
-    tgCustomElement          = document.getElementById("tg_custom");
-    scenarioModalElement     = document.getElementById('scenario-modal')
-    tgWeatherElement.checked = toggle_weather;
-    tgCustomElement.checked  = toggle_custom;
-}
+function loadData() {
 
-function loadWeatherBox() {
-    tempElement     = document.getElementById("temp-value");
-    cloudElement    = document.getElementById("cloud-value");
-    rainElement     = document.getElementById("rain-value");
-    windElement     = document.getElementById("wind-value");
-    daylightImage   = document.getElementById("daylight-img");
-    daylightElement = document.getElementById("daylight-value");
-    reloadConditionsValues()
-}
-
-function loadNavBar() {
     const clock = document.getElementById("nav-time");
-    setInterval(() => {
-        clock.innerHTML  = new Date().toString().split(" ").slice(0, 5).join(" ")
-    }, 1000)
-}
 
-//API Calls
-function getParamSource() {
-    fetch('/v1/simulator/paramsource')
-    .then(res => res.json())
-    .then(response => {
-        if(response.code === "success") {
-            DATA_SOURCE = response.dataSource
-            toggle_weather = (DATA_SOURCE === "WEATHER")
-            toggle_custom  = !toggle_weather
-            reloadToggle()
-        }
-    })
-    .catch(e => console.log(e))
-}
-function getWeatherParams() {
-    fetch('/v1/simulator/params')
-    .then(res => res.json())
-    .then(response => {
-        if(response.code === "success") {
-            params = response.conditionParams
-            reloadConditionsValues()
-        }
-    })
-    .catch(e => console.log(e))
-}
-
-function getScenarioParams(id, callback) {
+    const tempElement     = document.getElementById("temp-value");
+    const cloudElement    = document.getElementById("cloud-value");
+    const rainElement     = document.getElementById("rain-value");
+    const windElement     = document.getElementById("wind-value");
     
-}
-
-function putParamsSource(paramsource, callback) {
-    const request = {
-        method  : 'PUT',
-        headers: { 'Content-Type': 'application/json', 'Accept' : 'application/json'},
-        body    : JSON.stringify({source : paramsource})
-    }
-    fetch('/v1/simulator/paramsource', request)
+    fetch('v2/simulator/params')
     .then(res => res.json())
     .then(response => {
-        if(response.code === "success") callback()
+        clock.innerText = `${response.time.hours}:${response.time.minutes}:${response.time.seconds}`
+        tempElement.innerText = `${response.params.temperature} °C`
+        cloudElement.innerText = `${response.params.clouds} %`
+        rainElement.innerText = `${response.params.precipitations} %`
+        windElement.innerText = `${response.params.wind} kmh`
     })
-    .catch(e => console.log(e))
+    .catch(err => console.error(err))
 }
 
-function putScenarioPointer(id_scenario, callback) {
-    const request = {
-        method  : 'PUT',
-        headers: { 'Content-Type': 'application/json', 'Accept' : 'application/json'},
-        body    : JSON.stringify({idScenario : id_scenario})
-    }
-    fetch('/v1/simulator/params/pointer', request)
-    .then(res => res.json())
-    .then(response => {
-        if(response.code === "success") callback()
-    })
-    .catch(e => console.log(e))
-}
-
-
-//Element Manipulation
-function reloadToggle() {
-    tgWeatherElement.checked = toggle_weather;
-    tgCustomElement.checked = toggle_custom;
-}
-
-function reloadConditionsValues() {
-    tempElement.innerText       = params.temperature+'°C';
-    cloudElement.innerText      = params.cloudsCover+'%';
-    rainElement.innerText       = params.precipitation+'%';
-    windElement.innerText       = params.windSpeed+'km/h';
-    daylightImage.src           = (params.daylight === 'DAY') ? '/assets/icons/sun.png' : '/assets/icons/moon.png';
-    daylightElement.innerText   = params.daylight;
-}
-
-function toggleSource() {
-    toggle_weather = !toggle_weather
-    toggle_custom = !toggle_weather
-    DATA_SOURCE = toggle_weather ? 'WEATHER' : 'CUSTOM'
-    putParamsSource(DATA_SOURCE, () => {
-        getWeatherParams()
-    })
-    reloadToggle()
-}
-
-function selectScenarioPointer(id) {
-    putScenarioPointer(id, () => {
-        if(toggle_custom) getWeatherParams()
-    })
-}
-
-function addScenario() {
-    const name          = document.getElementById("scenario-name").value;
-    const wind          = document.getElementById("scenario-wind").value;
-    const rain          = document.getElementById("scenario-rain").value;
-    const efti          = document.getElementById("scenario-efti").value;
-    const clouds        = document.getElementById("scenario-clouds").value;
-    const daylight      = document.getElementById("scenario-daylight").value;
-    const temperature   = document.getElementById("scenario-temperature").value;
-
-    const request = {
-        method  : 'POST',
-        headers : { 'Content-Type': 'application/json', 'Accept' : 'application/json'},
-        body    : JSON.stringify({
-            name        : name,
-            wind        : wind,
-            rain        : rain,
-            efti        : efti,
-            clouds      : clouds,
-            daylight    : daylight,
-            temperature : temperature
-        })
-    }
-    fetch('/v1/simulator/scenario', request)
-    .then(res => res.json())
-    .then(response => {
-        if(response.code === "success") reloadScenarioBox()
-    })
-    .catch(e => console.log(e))
-}
-
+// Hanlders
 function deleteScenario(idScenario) {
 
     let isHeSure = confirm("Are you sur ?");
@@ -196,30 +41,166 @@ function deleteScenario(idScenario) {
                 idScenario : idScenario
             })
         }
-        fetch('/v1/simulator/scenario', request)
+        fetch('/v2/simulator/scenario', request)
         .then(res => res.json())
         .then(response => {
-            if(response.code === "success") reloadScenarioBox()
+            if(response.code === "success") location.reload()
         })
         .catch(e => console.log(e))
     }
     
 }
 
-function openScenarioModal() {
-    scenarioModalElement.style.display = 'flex'
+function selectScenarioPointerV2(id) {
+    putScenarioPointer(id)
 }
 
-function closeScenarioModal() {
-    scenarioModalElement.style.display = 'none'
-}
 
-function reloadScenarioBox() {
-    location.reload()
-}
+function createScenario() {
+    // Could be replaced with a parsing fun but I m too lazy to do so :/
+    let body = {
+        "scenario_name" : document.getElementById("scenario_name").value,
+        "scenario_intervals" : [
+            {
+                "param_type" : "temperature",
+                "interval_values" : [
+                    {
+                        "from_to" : "00h-06h",
+                        "inf" : document.getElementById("min-temp-0006").value,
+                        "sup" : document.getElementById("max-temp-0006").value
+                    },
+                    {
+                        "from_to" : "06h-12h",
+                        "inf" : document.getElementById("min-temp-0612").value,
+                        "sup" : document.getElementById("max-temp-0612").value
+                    },
+                    {
+                        "from_to" : "12h-18h",
+                        "inf" : document.getElementById("min-temp-1218").value,
+                        "sup" : document.getElementById("max-temp-1218").value
+                    },
+                    {
+                        "from_to" : "18h-00h",
+                        "inf" : document.getElementById("min-temp-1800").value,
+                        "sup" : document.getElementById("max-temp-1800").value
+                    }
+                ]
+            },
+            {
+                "param_type" : "wind",
+                "interval_values" : [
+                    {
+                        "from_to" : "00h-06h",
+                        "inf" : document.getElementById("min-wind-0006").value,
+                        "sup" : document.getElementById("max-wind-0006").value
+                    },
+                    {
+                        "from_to" : "06h-12h",
+                        "inf" : document.getElementById("min-wind-0612").value,
+                        "sup" : document.getElementById("max-wind-0612").value
+                    },
+                    {
+                        "from_to" : "12h-18h",
+                        "inf" : document.getElementById("min-wind-1218").value,
+                        "sup" : document.getElementById("max-wind-1218").value
+                    },
+                    {
+                        "from_to" : "18h-00h",
+                        "inf" : document.getElementById("min-wind-1800").value,
+                        "sup" : document.getElementById("max-wind-1800").value
+                    }
+                ]
+            },
+            {
+                "param_type" : "precipitations",
+                "interval_values" : [
+                    {
+                        "from_to" : "00h-06h",
+                        "inf" : document.getElementById("min-precipitation-0006").value,
+                        "sup" : document.getElementById("max-precipitation-0006").value
+                    },
+                    {
+                        "from_to" : "06h-12h",
+                        "inf" : document.getElementById("min-precipitation-0612").value,
+                        "sup" : document.getElementById("max-precipitation-0612").value
+                    },
+                    {
+                        "from_to" : "12h-18h",
+                        "inf" : document.getElementById("min-precipitation-1218").value,
+                        "sup" : document.getElementById("max-precipitation-1218").value
+                    },
+                    {
+                        "from_to" : "18h-00h",
+                        "inf" : document.getElementById("min-precipitation-1800").value,
+                        "sup" : document.getElementById("max-precipitation-1800").value
+                    }
+                ]
+            },
+            {
+                "param_type" : "clouds",
+                "interval_values" : [
+                    {
+                        "from_to" : "00h-06h",
+                        "inf" : document.getElementById("min-clouds-0006").value,
+                        "sup" : document.getElementById("max-clouds-0006").value
+                    },
+                    {
+                        "from_to" : "06h-12h",
+                        "inf" : document.getElementById("min-clouds-0612").value,
+                        "sup" : document.getElementById("max-clouds-0612").value
+                    },
+                    {
+                        "from_to" : "12h-18h",
+                        "inf" : document.getElementById("min-clouds-1218").value,
+                        "sup" : document.getElementById("max-clouds-1218").value
+                    },
+                    {
+                        "from_to" : "18h-00h",
+                        "inf" : document.getElementById("min-clouds-1800").value,
+                        "sup" : document.getElementById("max-clouds-1800").value
+                    }
+                ]
+            },
 
-window.onclick = function(event) {
-    if (event.target == scenarioModalElement) {
-        scenarioModalElement.style.display = "none";
+        ]
     }
+
+    const request = {
+        method  : 'POST',
+        headers : { 'Content-Type': 'application/json', 'Accept' : 'application/json'},
+        body    : JSON.stringify(body)
+    }
+    fetch('/v2/simulator/scenario', request)
+    .then(res => res.json())
+    .then(response => {
+        if(response.code === "success") {
+            location.reload()
+        }
+    })
+    .catch(e => console.log(e))
+    
+}
+
+// Workers
+function putScenarioPointer(id_scenario, callback) {
+    const request = {
+        method  : 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Accept' : 'application/json'},
+        body    : JSON.stringify({idScenario : id_scenario})
+    }
+    fetch('/v2/simulator/params/pointer', request)
+    .then(res => res.json())
+    .then(response => {
+        if(response.code === "success") callback()
+    })
+    .catch(e => console.log(e))
+}
+
+function getSimulatorParams(callback) {
+    fetch('/v2/simulator/params', request)
+    .then(res => res.json())
+    .then(response => {
+        if(response.code === "success") callback()
+    })
+    .catch(e => console.log(e))
 }

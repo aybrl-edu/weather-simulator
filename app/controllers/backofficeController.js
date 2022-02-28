@@ -1,18 +1,15 @@
-import {getAllScenarios, getSelectedScenarioId}  from '../models/database.js';
-
+const {getAllScenarios, getSelectedScenarioId}  = require('../models/database.js');
+const {getAllScenariosWithMinMaxFromDB}  = require('./simulatorParamsController.js');
 
 // Simulator 
-export const getSimulatorPage =  (req, res) => {
-    getAllScenarios(response => {
-        if(response.code === "success") {
-            let allScenarios = response.scenarios
-            getSelectedScenarioId(response => {
-                if(response.code === "success") {
-                    res.render('pages/simulator', {scenarios : allScenarios, selectedScenario : response.idScenario})
-                }
-                else console.error("error while rendring the simulator page")
-            })
-        }
-        else throw response
-    })
+exports.getSimulatorPage =  async (req, res) => {
+    
+    let scenarios = await getAllScenariosWithMinMaxFromDB()
+    let selectedScenario = await getSelectedScenarioId()
+
+    if(scenarios.code !== "success") {
+        res.render('pages/simulator', {scenarios : scenarios, selectedScenario : selectedScenario.idScenario})
+    }
+
+    else console.error("error while rendring the simulator page")
 }

@@ -1,11 +1,17 @@
-import express    from 'express';
-import dotenv     from 'dotenv';
-import bodyParser from 'body-parser';
-import path       from 'path';
+const express  = require('express');
+const dotenv     = require('dotenv');
+const bodyParser = require('body-parser');
+const path       = require('path');
 
-import backofficeRouter from "./app/routes/backofficeRouter.js";
-import simulatorParamsRoutes from "./app/routes/simulatorParamsRoutes.js";
-import simulatorScenariosRoutes from "./app/routes/simulatorScenariosRoutes.js";
+const { Worker }  = require('worker_threads');
+
+const backofficeRouter = require("./app/routes/backofficeRouter.js");
+const backofficeRouterV1 = require("./app/routes/old-version/backofficeRouter.js");
+
+const simulatorParamsRoutes = require("./app/routes/simulatorParamsRoutes.js");
+const simulatorParamsRoutesV1 = require("./app/routes/old-version/simulatorParamsRoutes.js");
+
+const simulatorScenariosRoutes = require("./app/routes/old-version/simulatorScenariosRoutes.js");
 
 //Config
 const app = express()
@@ -27,6 +33,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
 
 //Api Routes
+app.use(`/v1/simulator`, simulatorParamsRoutesV1)
 app.use(`/${api_version}/simulator`, simulatorParamsRoutes)
 
 //Backoffice Routes
@@ -34,6 +41,7 @@ app.use(`/simulator/scenarios`, simulatorScenariosRoutes)
 
 //Pages Routes
 app.use('/simulator', backofficeRouter);
+app.use('/simulator/old', backofficeRouterV1);
 
 //Listen
 app.listen(port, () => {console.log(`Simulator app listening at port : ${port}`)})

@@ -8,6 +8,7 @@ body {
     font-size: 12px;
     margin: 0;
     padding: 0;
+    overflow: hidden;
     /* Dark Mode
     background-color: rgb(43, 43, 43);
     color: white !important;
@@ -258,4 +259,71 @@ body {
     outline: none;
     border: none;
     cursor: pointer;
+}
+
+/* Scenario Creation Form*/
+
+#scenario-creation-form {
+    font-family: 'Poppins', sans-serif;
+    width: 100%;
+    border: 1px rgba(151, 127, 178, 0.4) solid;
+    border-collapse: collapse;
+}
+
+
+#scenario-creation-form thead tr {
+    background-color: #2195f3a8;
+    font-size: 16px;
+    border-bottom: 1px rgba(59, 108, 131, 0.4) solid;
+    color: white;
+}
+
+#scenario-creation-form thead th {
+    border: 1px rgba(0, 0, 0, 0.4) solid;
+}
+
+#scenario-creation-form tr {
+    border-bottom: 1px solid #dddddd;
+    height: 50px;
+}
+
+#scenario-creation-form td {
+    border: 1px rgba(0, 0, 0, 0.4) solid;
+    text-align: center;
+}
+
+#scenario-creation-form tbody tr{
+    background-color: #f3f3f3;
+}
+
+#scenario-creation-form tbody tr:nth-child(even){
+    background-color: #1694b369;
+}
+
+/* end form*/
+
+.btn-simulator {
+    background-color: #2196F3; /* Green */
+    border: 1px rgba(31, 31, 31, 0.4) solid;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    height: 30px;
+    cursor: pointer;
+}
+
+.input-simulator {
+    height: 25px;
+    width: 250px;
+}
+
+#scenario-creation-form input[type="number"], input[type="text"] {
+    width: 99%;
+    height: 30px;
+    font-size: 14px;
+    text-align: center;
+    outline: none;
+    border: none;
+    background-color: transparent;
 }

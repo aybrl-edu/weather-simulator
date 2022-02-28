@@ -1,7 +1,6 @@
-import Pool from 'pg';
+const Pool = require('pg');
 
-import dotenv from 'dotenv';
-import e from 'express';
+const dotenv = require('dotenv');
 
 dotenv.config()
 
@@ -13,7 +12,7 @@ const poolSimulator = new Pool.Pool({
   port:     process.env.DB_PORT,
 })
 
-export const getDataSource = (callback) => {
+exports.getDataSource = (callback) => {
     poolSimulator.query(
         'SELECT data_source, id_scenario FROM simulator_settings WHERE id_application=$1', [process.env.SIMULATOR_APP_ID],
         (error, results) => {
@@ -22,55 +21,129 @@ export const getDataSource = (callback) => {
     })
 }
 
-export const getScenarioById = (id, callback) => {
-    poolSimulator.query(
-        'SELECT * FROM simulator_scenarios WHERE id_scenario=$1', [id],
-        (error, results) => {
-            if (error) callback({code : "error"})
-            else if(results) callback(results.rows[0] || {})
+exports.getScenarioById = id => {
+    return new Promise(resolve => {
+        poolSimulator.query(
+            'SELECT * FROM scenario_v2 WHERE id_scenario=$1', [id],
+            (error, results) => {
+                if (error) resolve({code : "error"})
+                else if(results) resolve(results.rows[0] || {})
+        })
     })
 }
 
-export const getAllScenarios = (callback) => {
-    poolSimulator.query(
-        'SELECT * FROM simulator_scenarios ORDER BY id_scenario DESC',
-        (error, results) => {
-        if (error) callback({code : "error" , message : error.message})
-        if(results) callback({code : "success", scenarios : results.rows})
+exports.getScenarioIntervals = id => {
+    return new Promise(resolve => {
+        poolSimulator.query(
+            'SELECT * FROM scenario_intervals WHERE id_scenario=$1', [parseInt(id)],
+            (error, results) => {
+                if (error) resolve({code : "error", message : error.message})
+                else if(results) resolve(results.rows || {})
+        })
     })
 }
 
-export const getSelectedScenarioId = (callback) => {
-    poolSimulator.query(
-        'SELECT id_scenario FROM simulator_settings WHERE id_application=$1', [process.env.SIMULATOR_APP_ID],
-        (error, results) => {
-        if (error) callback({code : "error", message : error.message})
-        if(results) callback({code : "success", idScenario : results.rows[0]["id_scenario"]})
+exports.getIntervalValues = id => {
+    return new Promise(resolve => {
+        poolSimulator.query(
+            'SELECT * FROM interval_values WHERE id_interval=$1', [id],
+            (error, results) => {
+                if (error) resolve({code : "error"})
+                else if(results) resolve(results.rows || {})
+        })
     })
 }
 
-export const insertScenario = (scenario, callback) => {
+exports.getAllScenarios = () => {
+    return new Promise(resolve => {
+        poolSimulator.query(
+            `SELECT * FROM scenario_v2`,
+            (error, results) => {
+            if (error) resolve({code : "error" , message : error.message})
+            if(results) resolve({code : "success", scenarios : results.rows})
+        })
+    })
+}
+
+exports.getSelectedScenarioId = async () => {
+    return new Promise(resolve => {
+        poolSimulator.query(
+            'SELECT id_scenario FROM scenario_pointer WHERE id_app=$1', [process.env.SIMULATOR_APP_ID],
+            (error, results) => {
+            if (error) resolve({code : "error", message : error.message})
+            if(results) resolve({code : "success", idScenario : results.rows[0]["id_scenario"]})
+        })
+    })
+}
+
+exports.insertScenario = (scenario_name, callback) => {
     poolSimulator.query(
-        `INSERT INTO simulator_scenarios(scenario_name, scenario_description, temperature, wind_speed, rain_volume, cloud_coverage, daylight, efti) 
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`, 
-        [scenario.name, scenario.description, scenario.temperature, scenario.wind, scenario.rain, scenario.clouds, scenario.daylight, scenario.efti],
+        `INSERT INTO scenario_v2(scenario_name) VALUES ($1) RETURNING id_scenario`, 
+            [scenario_name],
         (error, results) => {
             if (error) callback({code : "error", message : error.message})
-            if(results) callback({code : "success"})
+            if(results) callback({code : "success", results : results})
         }
     )
 }
 
-export const dropScenario = (id, callback) => {
+exports.insertScenarioInterval = (scenarioInterval, idScenario, callback) => {
     poolSimulator.query(
-        'DELETE FROM simulator_scenarios WHERE id_scenario=$1', [id],
+        `INSERT INTO scenario_intervals(param_type, id_scenario) VALUES ($1, $2) RETURNING id_scenario_intervals`, 
+            [scenarioInterval.param_type, idScenario],
+        
+        (error, results) => {
+            if (error) callback({code : "error", message : error.message})
+            if(results) callback({code : "success", results : results})
+        }
+    )
+}
+
+exports.insertScenarioValues = (scenarioValues, id_interval, callback) => {
+    poolSimulator.query(
+        `INSERT INTO interval_values(interval_from_to, interval_inf_bound, interval_sup_bound, id_interval) 
+        VALUES ($1, $2, $3, $4)`, 
+        [scenarioValues.from_to, scenarioValues.inf, scenarioValues.sup, id_interval],
+        (error, results) => {
+            if (error) callback({code : "error", message : error.message})
+            if(results) callback({code : "success", results : results})
+        }
+    )
+}
+
+
+exports.dropScenario = (id, callback) => {
+    poolSimulator.query(
+        'DELETE FROM scenario_v2 WHERE id_scenario=$1', [id],
         (error, results) => {
         if (error) callback({code : "error"})
         if(results) callback({code : "success"})
     })
 }
 
-export const putDataSource = (source, callback) => {
+exports.dropInterval = id => {
+    return new Promise(resolve => {
+        poolSimulator.query(
+            'DELETE FROM scenario_intervals WHERE id_scenario=$1', [id],
+            (error, results) => {
+            if (error) resolve({code : "error"})
+            if(results) resolve({code : "success"})
+        })
+    })
+}
+
+exports.dropValues = id => {
+    return new Promise(resolve => {
+        poolSimulator.query(
+            'DELETE FROM interval_values WHERE id_interval=$1', [id],
+            (error, results) => {
+            if (error) resolve({code : "error"})
+            if(results) resolve({code : "success"})
+        })
+    })
+}
+
+exports.putDataSource = (source, callback) => {
     poolSimulator.query(
         'UPDATE simulator_settings SET data_source=$1 WHERE id_application=$2', [source, process.env.SIMULATOR_APP_ID],
         (error, results) => {
@@ -79,9 +152,9 @@ export const putDataSource = (source, callback) => {
     })
 }
 
-export const putParamsScenarioId = (idScenario, callback) => {
+exports.putParamsScenarioId = (idScenario, callback) => {
     poolSimulator.query(
-        'UPDATE simulator_settings SET id_scenario=$1 WHERE id_application=$2', [idScenario, process.env.SIMULATOR_APP_ID],
+        'UPDATE scenario_pointer SET id_scenario=$1 WHERE id_app=$2', [idScenario, process.env.SIMULATOR_APP_ID],
         (error, results) => {
         if (error) callback({code : "error"})
         if(results) callback({code : "success"})

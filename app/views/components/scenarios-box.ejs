@@ -1,11 +1,10 @@
 <div>
     <div id="scenarios-box-header">
         <h2 style="text-align: center; margin: auto;">Custom Scenario Pointer</h2>
-        <img src="/assets/icons/plus.png" onclick="openScenarioModal()" style="width: 17px; height: 17px; cursor: pointer; margin-right: 17px;">
     </div>
     <div id="scenarios-list">
         <%scenarios.forEach(function(scenario, key){ %>
-            <%-include('../elements/scenario', {scenario: scenario, checked : (selectedScenario === scenario.id_scenario) ? "checked" : ""})%>
+            <%-include('../elements/scenario', {scenario: scenario, checked : (selectedScenario === scenario.scenario_id) ? "checked" : ""})%>
         <% }); %>
     </div>
 </div>

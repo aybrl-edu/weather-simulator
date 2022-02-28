@@ -1,0 +1,164 @@
+<div>
+    <div id="scenarios-box-header">
+        <h2 style="text-align: center;">Création de scénarios paramètrés</h2>
+    </div>
+    <div id="scenario-form">
+        <table id="scenario-creation-form">
+            <thead>
+                <tr>
+                    <th colspan="2">Paramètres Simulation</th>
+                    <th>00h - 06h</th>
+                    <th>06h - 12h</th>
+                    <th>12h - 18h</th>
+                    <th>18h - 00h</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Température -->
+                <tr>
+                    <td rowspan="2">Température</td>
+                    <td>min</td>
+                    <td>
+                        <input type="number" id="min-temp-0006">
+                    </td>
+                    <td>
+                        <input type="number" id="min-temp-0612">
+                    </td>
+                    <td>
+                        <input type="number" id="min-temp-1218">
+                    </td>
+                    <td>
+                        <input type="number" id="min-temp-1800">
+                    </td>
+                </tr>
+                <tr>
+                    <td>max</td>
+                    <td>
+                        <input type="number" id="max-temp-0006">
+                    </td>
+                    <td>
+                        <input type="number" id="max-temp-0612">
+                    </td>
+                    <td>
+                        <input type="number" id="max-temp-1218">
+                    </td>
+                    <td>
+                        <input type="number" id="max-temp-1800">
+                    </td>
+                </tr>
+
+                <!-- Wind Speed -->
+                <tr>
+                    <td rowspan="2">Vitesse de Vent</td>
+                    <td>min</td>
+                    <td>
+                        <input type="number" id="min-wind-0006">
+                    </td>
+                    <td>
+                        <input type="number" id="min-wind-0612">
+                    </td>
+                    <td>
+                        <input type="number" id="min-wind-1218">
+                    </td>
+                    <td>
+                        <input type="number" id="min-wind-1800">
+                    </td>
+                </tr>
+                <tr>
+                    <td>max</td>
+                    <td>
+                        <input type="number" id="max-wind-0006">
+                    </td>
+                    <td>
+                        <input type="number" id="max-wind-0612">
+                    </td>
+                    <td>
+                        <input type="number" id="max-wind-1218">
+                    </td>
+                    <td>
+                        <input type="number" id="max-wind-1800">
+                    </td>
+                </tr>
+
+                <!-- Clouds -->
+                <tr>
+                    <td rowspan="2">Couverture</td>
+                    <td>min</td>
+                    <td>
+                        <input type="number" id="min-clouds-0006">
+                    </td>
+                    <td>
+                        <input type="number" id="min-clouds-0612">
+                    </td>
+                    <td>
+                        <input type="number" id="min-clouds-1218">
+                    </td>
+                    <td>
+                        <input type="number" id="min-clouds-1800">
+                    </td>
+                </tr>
+                <tr>
+                    <td>min</td>
+                    <td>
+                        <input type="number" id="max-clouds-0006">
+                    </td>
+                    <td>
+                        <input type="number" id="max-clouds-0612">
+                    </td>
+                    <td>
+                        <input type="number" id="max-clouds-1218">
+                    </td>
+                    <td>
+                        <input type="number" id="max-clouds-1800">
+                    </td>
+                </tr>
+
+                <!-- Rain -->
+                <tr>
+                    <td rowspan="2">Précipitation</td>
+                    <td>min</td>
+                    <td>
+                        <input type="number" id="min-precipitation-0006">
+                    </td>
+                    <td>
+                        <input type="number" id="min-precipitation-0612">
+                    </td>
+                    <td>
+                        <input type="number" id="min-precipitation-1218">
+                    </td>
+                    <td>
+                        <input type="number" id="min-precipitation-1800">
+                    </td>
+                </tr>
+                <tr>
+                    <td>max</td>
+                    <td>
+                        <input type="number" id="max-precipitation-0006">
+                    </td>
+                    <td>
+                        <input type="number" id="max-precipitation-0612">
+                    </td>
+                    <td>
+                        <input type="number" id="max-precipitation-1218">
+                    </td>
+                    <td>
+                        <input type="number" id="max-precipitation-1800">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="4">
+                        <input type="text" id="scenario_name" class="input-simulator" placeholder="Nom scénario">
+                    </td>
+                    <td colspan="5">
+                        <input type="button" id="create-scn" value="Créer Scénario" class="btn-simulator" onclick="createScenario()">
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+        <div style="display: flex; justify-content: flex-end; align-items: center; margin: 15px 10px 10px 0;">
+            
+        </div>
+    </div>
+</div>
