@@ -80,7 +80,7 @@ exports.postScenario =  (req, res) => {
     let state = 0;
     let idScenario = null;
 
-    insertScenario(req.body.scenario_name, response => {
+    insertScenario(req.body.scenario_name, req.body.season, req.body.daytype, response => {
         if(response.code === "success") {
             idScenario = response.results.rows[0].id_scenario
             let scenarioIntervals = req.body.scenario_intervals
@@ -187,6 +187,8 @@ async function getScenarioFromDB (idScenario) {
     let scenarioObj = {
         "id_scenario" : idScenario,
         "scenario_name" : scenarioRes.scenario_name,
+        "season" : scenarioRes.season,
+        "daytype" :scenarioRes.daytype,
         "scenario_intervals" : []
     }
     
@@ -276,11 +278,13 @@ exports.getSimulationParams = async (req, res) => {
         "temperature" : 0,
         "wind" : 0,
         "precipitations" : 0,
-        "clouds" : 0
+        "clouds" : 0,
     }
     const actualConditions = {
         time : null, // SimulTime
-        params : null //GenParams
+        params : null, //GenParams
+        season : null,
+        daytype : null
     }
 
     // scenario
@@ -303,6 +307,8 @@ exports.getSimulationParams = async (req, res) => {
     // response
     actualConditions.time = sendSimulatorTime()
     actualConditions.params = generatedParams
+    actualConditions.season = scenario.season
+    actualConditions.daytype = scenario.daytype
 
     res.send(actualConditions);
 }
@@ -313,7 +319,7 @@ function getIntervalFromTime(simulatorTime) {
     if(simulatorTime.hours >= 0 && simulatorTime.hours < 6) return "00h-06h"
     if(simulatorTime.hours >= 6 && simulatorTime.hours < 12) return "06h-12h"
     if(simulatorTime.hours >= 12 && simulatorTime.hours < 18) return "12h-18h"
-    if(simulatorTime.hours >= 18 && simulatorTime.hours < 0) return "18h-00h"
+    if(simulatorTime.hours >= 18) return "18h-00h"
 }
 
 function getValueFromInterval(values, interval) {
@@ -326,6 +332,7 @@ function getValueFromInterval(values, interval) {
            if(value.interval_from_to === interval){
                 intervalRes.inf = value.interval_inf_bound
                 intervalRes.sup = value.interval_sup_bound
+                return;
            }
         })
     })

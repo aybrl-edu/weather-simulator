@@ -52,31 +52,31 @@
                     <td rowspan="2">Vitesse de Vent</td>
                     <td>min</td>
                     <td>
-                        <input type="number" id="min-wind-0006">
+                        <input type="number" id="min-wind-0006" min="0">
                     </td>
                     <td>
-                        <input type="number" id="min-wind-0612">
+                        <input type="number" id="min-wind-0612" min="0">
                     </td>
                     <td>
-                        <input type="number" id="min-wind-1218">
+                        <input type="number" id="min-wind-1218" min="0">
                     </td>
                     <td>
-                        <input type="number" id="min-wind-1800">
+                        <input type="number" id="min-wind-1800" min="0">
                     </td>
                 </tr>
                 <tr>
                     <td>max</td>
                     <td>
-                        <input type="number" id="max-wind-0006">
+                        <input type="number" id="max-wind-0006" min="0">
                     </td>
                     <td>
-                        <input type="number" id="max-wind-0612">
+                        <input type="number" id="max-wind-0612" min="0">
                     </td>
                     <td>
-                        <input type="number" id="max-wind-1218">
+                        <input type="number" id="max-wind-1218" min="0">
                     </td>
                     <td>
-                        <input type="number" id="max-wind-1800">
+                        <input type="number" id="max-wind-1800" min="0">
                     </td>
                 </tr>
 
@@ -85,31 +85,31 @@
                     <td rowspan="2">Couverture</td>
                     <td>min</td>
                     <td>
-                        <input type="number" id="min-clouds-0006">
+                        <input type="number" id="min-clouds-0006" min="0">
                     </td>
                     <td>
-                        <input type="number" id="min-clouds-0612">
+                        <input type="number" id="min-clouds-0612" min="0">
                     </td>
                     <td>
-                        <input type="number" id="min-clouds-1218">
+                        <input type="number" id="min-clouds-1218" min="0">
                     </td>
                     <td>
-                        <input type="number" id="min-clouds-1800">
+                        <input type="number" id="min-clouds-1800" min="0">
                     </td>
                 </tr>
                 <tr>
-                    <td>min</td>
+                    <td>max</td>
                     <td>
-                        <input type="number" id="max-clouds-0006">
+                        <input type="number" id="max-clouds-0006" min="0">
                     </td>
                     <td>
-                        <input type="number" id="max-clouds-0612">
+                        <input type="number" id="max-clouds-0612" min="0">
                     </td>
                     <td>
-                        <input type="number" id="max-clouds-1218">
+                        <input type="number" id="max-clouds-1218" min="0">
                     </td>
                     <td>
-                        <input type="number" id="max-clouds-1800">
+                        <input type="number" id="max-clouds-1800" min="0">
                     </td>
                 </tr>
 
@@ -118,37 +118,51 @@
                     <td rowspan="2">Précipitation</td>
                     <td>min</td>
                     <td>
-                        <input type="number" id="min-precipitation-0006">
+                        <input type="number" id="min-precipitation-0006" min="0">
                     </td>
                     <td>
-                        <input type="number" id="min-precipitation-0612">
+                        <input type="number" id="min-precipitation-0612" min="0">
                     </td>
                     <td>
-                        <input type="number" id="min-precipitation-1218">
+                        <input type="number" id="min-precipitation-1218" min="0">
                     </td>
                     <td>
-                        <input type="number" id="min-precipitation-1800">
+                        <input type="number" id="min-precipitation-1800" min="0">
                     </td>
                 </tr>
                 <tr>
                     <td>max</td>
                     <td>
-                        <input type="number" id="max-precipitation-0006">
+                        <input type="number" id="max-precipitation-0006" min="0">
                     </td>
                     <td>
-                        <input type="number" id="max-precipitation-0612">
+                        <input type="number" id="max-precipitation-0612" min="0">
                     </td>
                     <td>
-                        <input type="number" id="max-precipitation-1218">
+                        <input type="number" id="max-precipitation-1218" min="0">
                     </td>
                     <td>
-                        <input type="number" id="max-precipitation-1800">
+                        <input type="number" id="max-precipitation-1800" min="0">
                     </td>
                 </tr>
 
                 <tr>
-                    <td colspan="4">
+                    <td colspan="2">
                         <input type="text" id="scenario_name" class="input-simulator" placeholder="Nom scénario">
+                    </td>
+                    <td colspan="1">
+                        <select id="season">
+                            <option value="HIVER">Hiver</option>
+                            <option value="AUTOMNE">Automne</option>
+                            <option value="PRINTEMPS">Printemps</option>
+                            <option value="ETE">Été</option>
+                        </select>
+                    </td>
+                    <td colspan="1">
+                        <select id="daytype">
+                            <option value="WEEKDAY">Weekday</option>
+                            <option value="WEEKEND">Weekend</option>
+                        </select>
                     </td>
                     <td colspan="5">
                         <input type="button" id="create-scn" value="Créer Scénario" class="btn-simulator" onclick="createScenario()">

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const {getSimulatorParams, 
+const { 
         putParamSource, 
         getParamSource, 
         getSimulatorScenario,
@@ -14,7 +14,6 @@ const {getSimulatorParams,
         deleteScenario,
         getSimulatorTimeL
 } = require('../controllers/simulatorParamsController.js');
-const { getSimulatorPause } = require('../workers/threadVirtualMemory.js');
 
 //Params
 router.get('/params', getSimulationParams)

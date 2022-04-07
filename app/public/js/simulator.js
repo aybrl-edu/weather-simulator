@@ -1,11 +1,7 @@
-
-
 //On load
 window.onload = function() {
     setInterval(loadData, 990)
 };
-
-
 
 function loadData() {
 
@@ -60,6 +56,8 @@ function createScenario() {
     // Could be replaced with a parsing fun but I m too lazy to do so :/
     let body = {
         "scenario_name" : document.getElementById("scenario_name").value,
+        "season" : document.getElementById("season").value,
+        "daytype" : document.getElementById("daytype").value,
         "scenario_intervals" : [
             {
                 "param_type" : "temperature",

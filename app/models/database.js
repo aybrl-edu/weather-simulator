@@ -76,10 +76,10 @@ exports.getSelectedScenarioId = async () => {
     })
 }
 
-exports.insertScenario = (scenario_name, callback) => {
+exports.insertScenario = (scenario_name, season, daytype, callback) => {
     poolSimulator.query(
-        `INSERT INTO scenario_v2(scenario_name) VALUES ($1) RETURNING id_scenario`, 
-            [scenario_name],
+        `INSERT INTO scenario_v2(scenario_name, season, daytype) VALUES ($1, $2, $3) RETURNING id_scenario`, 
+            [scenario_name, season, daytype],
         (error, results) => {
             if (error) callback({code : "error", message : error.message})
             if(results) callback({code : "success", results : results})

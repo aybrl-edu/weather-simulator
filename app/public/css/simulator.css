@@ -39,6 +39,8 @@ body {
 #controls-left {
     display: grid;
     grid-template-rows: 15% 85%;
+    border-right: 1px solid black;
+    border-top: 1px solid rgba(0, 0, 0, 0.155);
 }
 
 #sweather-controls h1 { 
@@ -65,7 +67,7 @@ body {
 
 #controls-left-bottom {
     margin-left: 0.5%;
-    border-top: 1px solid rgba(0, 0, 0, 0.155);
+    margin-right: 0.5%;
 }
 
 #controls-right-bottom {
