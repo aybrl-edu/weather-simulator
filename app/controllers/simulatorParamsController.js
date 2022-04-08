@@ -292,11 +292,20 @@ exports.getSimulationParams = async (req, res) => {
     let scenario = await getScenarioFromDB(selectedScenario.idScenario)
     let currentInterval = getIntervalFromTime(sendSimulatorTime())
     
+    let tempInterval = 0
+    let windInterval = 0
+    let prepInterval = 0
+    let cloudsInterval = 0
+
     // interval
-    let tempInterval = getValueFromInterval(scenario.scenario_intervals[0].interval_values, currentInterval)
-    let cloudsInterval = getValueFromInterval(scenario.scenario_intervals[1].interval_values, currentInterval)
-    let windInterval = getValueFromInterval(scenario.scenario_intervals[2].interval_values, currentInterval)
-    let prepInterval = getValueFromInterval(scenario.scenario_intervals[3].interval_values, currentInterval)
+    scenario.scenario_intervals.map(sc_interval => {
+        switch(sc_interval.param_type) {
+            case 'temperature' : tempInterval = getValueFromInterval(sc_interval.interval_values, currentInterval)
+            case 'wind' : windInterval = getValueFromInterval(sc_interval.interval_values, currentInterval)
+            case 'precipitations' : prepInterval = getValueFromInterval(sc_interval.interval_values, currentInterval)
+            case 'clouds' : cloudsInterval = getValueFromInterval(sc_interval.interval_values, currentInterval)
+        }
+    })
 
     // values
     generatedParams.temperature = generateRandom(tempInterval.inf, tempInterval.sup)
