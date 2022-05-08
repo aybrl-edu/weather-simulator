@@ -1,7 +1,8 @@
-const express  = require('express');
+const express    = require('express');
 const dotenv     = require('dotenv');
 const bodyParser = require('body-parser');
 const path       = require('path');
+const cors       = require('cors');
 
 const { Worker }  = require('worker_threads');
 
@@ -16,6 +17,7 @@ const simulatorScenariosRoutes = require("./app/routes/old-version/simulatorScen
 //Config
 const app = express()
 dotenv.config()
+app.use(cors())
 
 //View
 app.set('views', path.join(path.resolve(), 'app', 'views'));

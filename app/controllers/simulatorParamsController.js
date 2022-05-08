@@ -20,7 +20,7 @@ var {setSimulatorPause,
     setScenarioData
 } = require('../workers/threadVirtualMemory.js');
 
-var {updateFrequency,updatePause, sendSimulatorTime} = require('../workers/conditionGenerator.js');
+var {updateFrequency,updatePause, sendSimulatorTime, updateTime} = require('../workers/conditionGenerator.js');
 
 // Globals
 
@@ -241,9 +241,11 @@ const getScenarioWithMinMaxFromDB = async (idScenario) => {
     
             let min = Number.POSITIVE_INFINITY
             let max = Number.NEGATIVE_INFINITY
-    
+            // 3, 4, 5, 10 ,2, 12
             for(let i = 0; i < valuesRes.length; i++) {
+                //3,
                 if(valuesRes[i].interval_inf_bound < min) min = valuesRes[i].interval_inf_bound
+                //3, 4, 5
                 if(valuesRes[i].interval_sup_bound > max) max = valuesRes[i].interval_sup_bound
             }
             intervalValuesObj.min = min
@@ -257,8 +259,8 @@ const getScenarioWithMinMaxFromDB = async (idScenario) => {
 }
 
 exports.setSimulatorFrequency = (req, res) => {
-    setSimulatorFrequency(req.body.frequency * 1000)
-    updateFrequency(req.body.frequency * 1000)
+    setSimulatorFrequency(req.body.frequency)
+    updateFrequency(req.body.frequency)
     res.send({"code" : "success"})
 }
 
@@ -273,6 +275,7 @@ exports.getSimulatorTimeL = (req, res) => {
 }
 
 exports.getSimulationParams = async (req, res) => {
+    updateTime()
     // init
     const generatedParams = {
         "temperature" : 0,
