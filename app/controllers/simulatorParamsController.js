@@ -23,6 +23,40 @@ var {setSimulatorPause,
 var {updateFrequency,updatePause, sendSimulatorTime, updateTime} = require('../workers/conditionGenerator.js');
 
 // Globals
+let lastValues = {
+    temp : 0,
+    rain : 0,
+    clouds : 0,
+    wind : 0,
+    lastInt : ""
+}
+
+let variations = {
+    "00h-06h" : {
+        wind : "DOWN",
+        clouds : "DOWN",
+        rain : "UP",
+        temp : "DOWN"
+    },
+    "06h-12h" : {
+        wind : "UP",
+        clouds : "UP",
+        rain : "DOWN",
+        temp : "UP"
+    },
+    "12h-18h" : {
+        wind : "UP",
+        clouds : "DOWN",
+        rain : "DOWN",
+        temp : "UP"
+    },
+    "18h-00h" : {
+        wind : "DOWN",
+        clouds : "DOWN",
+        rain : "UP",
+        temp : "DOWN"
+    }
+}
 
 // Simulator 
 exports.getSimulatorParams =  (req, res) => {
@@ -311,10 +345,10 @@ exports.getSimulationParams = async (req, res) => {
     })
 
     // values
-    generatedParams.temperature = generateRandom(tempInterval.inf, tempInterval.sup)
-    generatedParams.clouds = generateRandom(cloudsInterval.inf, cloudsInterval.sup)
-    generatedParams.wind = generateRandom(windInterval.inf, windInterval.sup)
-    generatedParams.precipitations = generateRandom(prepInterval.inf, prepInterval.sup)
+    generatedParams.temperature = generateRandom(tempInterval, "TEMP")
+    generatedParams.clouds = generateRandom(cloudsInterval, "CLOUDS")
+    generatedParams.wind = generateRandom(windInterval, "WIND")
+    generatedParams.precipitations = generateRandom(prepInterval, "RAIN")
 
     // response
     actualConditions.time = sendSimulatorTime()
@@ -351,6 +385,78 @@ function getValueFromInterval(values, interval) {
     return intervalRes
 }
 
-function generateRandom(min , max) {
-    return (Math.random() * (max - min) + min).toFixed(2);
+function generateRandom(interval, type) {
+    let min = interval.inf
+    let max = interval.sup
+    return (Math.random() * (max - min) + min).toFixed(2)
+}
+
+function generateRandom2(interval, type) {
+    let last = 0
+    let int = getIntervalFromTime(sendSimulatorTime())
+    
+    switch (type) {
+        case 'CLOUDS' : {
+            last = lastValues.clouds
+            variation = variations[`${int}`].clouds
+            last = getRationalRandomValues(last, int, variation, interval)
+            lastValues.clouds = last
+            break;
+        }
+        case 'WIND' : {
+            last = lastValues.wind
+            variation = variations[`${int}`].wind
+            last = getRationalRandomValues(last, int, variation, interval)
+            lastValues.wind = last
+            break;
+        }
+        case 'RAIN' : {
+            last = lastValues.rain
+            variation = variations[`${int}`].rain
+            last = getRationalRandomValues(last, int, variation, interval)
+            lastValues.rain = last
+            break;
+        }
+        case 'TEMP' : {
+            last = lastValues.temp
+            variation = variations[`${int}`].temp
+            last = getRationalRandomValues(last, int, variation, interval)
+            lastValues.temp = last
+            break;
+        }
+    }
+
+
+    return last
+}
+
+function getRationalRandomValues(last, int, variation, interval) {
+
+    let min = Number.parseInt(interval.inf)
+    let max = Number.parseInt(interval.sup)
+
+    if(lastValues.lastInt !== int) {
+        lastValues.lastInt = int
+        last = Number.parseInt((max - min) / 2)
+    }
+
+    console.log("int"+int+" variation : "+variation+" "+last)
+    if(variation === "UP" && last < max) {
+        let half = max / 4
+        last = (Math.random() * (half + last)).toFixed(2)
+    }
+
+    else if(variation === "UP" && last >= max) {
+        last = (Math.random() * (max  - (max / 2)) + (max / 2)).toFixed(2);
+    }
+
+    if(variation === "DOWN" && last > min) {
+        last = (Math.random() * (last - min) + min).toFixed(2);
+    }
+
+    else if(variation === "DOWN" && last <= min) {
+        last = (Math.random() * ((max / 2) - min) + min).toFixed(2);
+    }
+
+    return Number.parseInt(last)
 }
